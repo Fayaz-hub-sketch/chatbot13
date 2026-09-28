@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LabSphere — Science Experiments</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg: #070b0d;
+            --panel: rgba(14, 22, 22, 0.92);
+            --panel-soft: #111a19;
+            --line: rgba(255, 255, 255, 0.09);
+            --text: #f2f7f4;
+            --muted: #8f9e99;
+            --accent: #35d39a;
+            --accent-2: #5ee7d1;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            overflow: hidden;
+            color: var(--text);
+            font-family: Inter, ui-sans-serif, system-ui, -apple-system,
+                BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background:
+                radial-gradient(circle at 12% 15%, rgba(53, 211, 154, 0.14), transparent 28%),
+                radial-gradient(circle at 88% 85%, rgba(94, 231, 209, 0.09), transparent 30%),
+                var(--bg);
+        }
+
+        .app {
+            width: min(1180px, 94vw);
+            height: min(90vh, 820px);
+            margin: 5vh auto;
+            display: grid;
+            grid-template-columns: 295px 1fr;
+            overflow: hidden;
+            border: 1px solid var(--line);
+            border-radius: 28px;
+            background: var(--panel);
+            box-shadow: 0 30px 90px rgba(0, 0, 0, 0.48);
+            backdrop-filter: blur(20px);
+        }
+
+        aside {
+            position: relative;
+            padding: 29px 24px;
+            border-right: 1px solid var(--line);
+            background:
+                linear-gradient(160deg, rgba(19, 31, 29, 0.96), rgba(9, 14, 15, 0.99));
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 11px;
+            font-size: 20px;
+            font-weight: 800;
+            letter-spacing: -0.6px;
+        }
+
+        .brand-icon {
+            width: 44px;
+            height: 44px;
+            display: grid;
+            place-items: center;
+            border-radius: 14px;
+            color: #082018;
+            background: linear-gradient(135deg, var(--accent), var(--accent-2));
+            box-shadow: 0 8px 28px rgba(53, 211, 154, 0.22);
+            font-size: 21px;
+        }
+
+        .side-content {
+            margin-top: 54px;
+        }
+
+        .side-content h1 {
+            margin: 0 0 14px;
+            font-size: 35px;
+            line-height: 1.03;
+            letter-spacing: -1.7px;
+        }
+
+        .side-content p {
+            margin: 0;
+            color: var(--muted);
+            font-size: 13px;
+            line-height: 1.65;
+        }
+
+        .topics {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 24px;
+        }
+
+        .topic {
+            padding: 8px 10px;
+            border: 1px solid var(--line);
+            border-radius: 999px;
+            color: #c3cec9;
+            background: rgba(255, 255, 255, 0.025);
+            font-size: 11px;
+        }
+
+        .online {
+            position: absolute;
+            right: 24px;
+            bottom: 24px;
+            left: 24px;
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            color: #8f9e99;
+            font-size: 11px;
+        }
+
+        .online-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #4ade80;
+            box-shadow: 0 0 12px #4ade80;
+        }
+
+        main {
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            min-height: 78px;
+            padding: 17px 25px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--line);
+        }
+
+        .agent {
+            display: flex;
+            align-items: center;
+            gap: 11px;
+        }
+
+        .agent-icon {
+            width: 40px;
+            height: 40px;
+            display: grid;
+            place-items: center;
+            border-radius: 12px;
+            background: #17221f;
+            font-size: 18px;
+        }
+
+        .agent strong {
+            display: block;
+            font-size: 14px;
+        }
+
+        .agent span {
+            color: var(--muted);
+            font-size: 11px;
+        }
+
+        .model {
+            padding: 7px 10px;
+            border: 1px solid var(--line);
+            border-radius: 9px;
+            color: #8f9e99;
+            font-size: 10px;
+        }
+
+        #messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 28px;
+            scroll-behavior: smooth;
+        }
+
+        #messages::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        #messages::-webkit-scrollbar-thumb {
+            border-radius: 10px;
+            background: #27312e;
+        }
+
+        .welcome {
+            max-width: 650px;
+            margin: 6vh auto;
+            text-align: center;
+        }
+
+        .welcome-icon {
+            margin-bottom: 12px;
+            font-size: 43px;
+        }
+
+        .welcome h2 {
+            margin: 0 0 8px;
+            font-size: 24px;
+        }
+
+        .welcome p {
+            margin: 0;
+            color: var(--muted);
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .message {
+            display: flex;
+            gap: 11px;
+            margin-bottom: 20px;
+            animation: appear 0.25s ease;
+        }
+
+        @keyframes appear {
+            from {
+                opacity: 0;
+                transform: translateY(7px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .message.user {
+            justify-content: flex-end;
+        }
+
+        .avatar {
+            flex: 0 0 32px;
+            width: 32px;
+            height: 32px;
+            display: grid;
+            place-items: center;
+            border-radius: 10px;
+            background: #18201e;
+            font-size: 12px;
+        }
+
+        .user .avatar {
+            order: 2;
+            background: #18332b;
+        }
+
+        .bubble {
+            max-width: min(700px, 78%);
+            padding: 13px 16px;
+            border: 1px solid var(--line);
+            border-radius: 17px;
+            border-top-left-radius: 5px;
+            color: #dfe8e4;
+            background: #141c1b;
+            font-size: 14px;
+            line-height: 1.65;
+            white-space: pre-wrap;
+        }
+
+        .user .bubble {
+            border: 0;
+            border-radius: 17px;
+            border-bottom-right-radius: 5px;
+            color: #062019;
+            background: linear-gradient(135deg, #35d39a, #5ee7d1);
+        }
+
+        .composer {
+            padding: 17px 22px 20px;
+            border-top: 1px solid var(--line);
+            background: rgba(7, 11, 12, 0.74);
+        }
+
+        form {
+            display: flex;
+            gap: 10px;
+            padding: 7px;
+            border: 1px solid var(--line);
+            border-radius: 17px;
+            background: #101817;
+        }
+
+        textarea {
+            flex: 1;
+            min-height: 40px;
+            max-height: 120px;
+            resize: none;
+            outline: none;
+            border: 0;
+            padding: 10px 12px;
+            color: var(--text);
+            background: transparent;
+            font: inherit;
+            font-size: 14px;
+        }
+
+        textarea::placeholder {
+            color: #687571;
+        }
+
+        button {
+            align-self: flex-end;
+            width: 43px;
+            height: 43px;
+            border: 0;
+            border-radius: 13px;
+            color: #082018;
+            background: linear-gradient(135deg, var(--accent), var(--accent-2));
+            cursor: pointer;
+            font-size: 17px;
+            font-weight: 800;
+            transition: transform 0.15s ease, opacity 0.15s ease;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: wait;
+            transform: none;
+        }
+
+        .hint {
+            margin: 9px 3px 0;
+            color: #596662;
+            font-size: 10px;
+            text-align: center;
+        }
+
+        @media (max-width: 780px) {
+            body {
+                overflow: auto;
+            }
+
+            .app {
+                width: 100%;
+                height: 100vh;
+                margin: 0;
+                border-radius: 0;
+                grid-template-columns: 1fr;
+            }
+
+            aside {
+                display: none;
+            }
+
+            header {
+                padding: 15px;
+            }
+
+            #messages {
+                padding: 20px 15px;
+            }
+
+            .bubble {
+                max-width: 84%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app">
+        <aside>
+            <div class="brand">
+                <div class="brand-icon">⚗</div>
+                LabSphere
+            </div>
+
+            <div class="side-content">
+                <h1>Think.<br>Test.<br>Discover.</h1>
+
+                <p>
+                    A focused AI learning assistant for science experiments,
+                    scientific methods, observations, and safe investigations.
+                </p>
+
+                <div class="topics">
+                    <span class="topic">Physics</span>
+                    <span class="topic">Chemistry</span>
+                    <span class="topic">Biology</span>
+                    <span class="topic">Earth Science</span>
+                    <span class="topic">Scientific Method</span>
+                </div>
+            </div>
+
+            <div class="online">
+                <span class="online-dot"></span>
+                Science experiment mode active
+            </div>
+        </aside>
+
+        <main>
+            <header>
+                <div class="agent">
+                    <div class="agent-icon">🧪</div>
+                    <div>
+                        <strong>LabSphere</strong>
+                        <span>Science Experiment Assistant</span>
+                    </div>
+                </div>
+
+                <div class="model">GEMINI 3.1 FLASH-LITE</div>
+            </header>
+
+            <section id="messages">
+                <div class="welcome" id="welcome">
+                    <div class="welcome-icon">🔬</div>
+                    <h2>Let's investigate.</h2>
+                    <p>
+                        Ask about a science experiment, scientific method,
+                        observations, variables, results, or the principle
+                        behind an experiment.
+                    </p>
+                </div>
+            </section>
+
+            <div class="composer">
+                <form id="chatForm">
+                    <textarea
+                        id="messageInput"
+                        rows="1"
+                        placeholder="Ask a science experiment question..."
+                        autocomplete="off"
+                    ></textarea>
+
+                    <button id="sendButton" type="submit" aria-label="Send">
+                        ➤
+                    </button>
+                </form>
+
+                <div class="hint">
+                    LabSphere answers science-experiment questions only.
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        const form = document.getElementById("chatForm");
+        const input = document.getElementById("messageInput");
+        const messages = document.getElementById("messages");
+        const sendButton = document.getElementById("sendButton");
+        const welcome = document.getElementById("welcome");
+
+        function addMessage(text, type) {
+            if (welcome) {
+                welcome.remove();
+            }
+
+            const row = document.createElement("div");
+            row.className = `message ${type}`;
+
+            const avatar = document.createElement("div");
+            avatar.className = "avatar";
+            avatar.textContent = type === "user" ? "You" : "⚗";
+
+            const bubble = document.createElement("div");
+            bubble.className = "bubble";
+            bubble.textContent = text;
+
+            row.appendChild(avatar);
+            row.appendChild(bubble);
+            messages.appendChild(row);
+
+            messages.scrollTop = messages.scrollHeight;
+
+            return bubble;
+        }
+
+        input.addEventListener("input", () => {
+            input.style.height = "auto";
+            input.style.height = Math.min(input.scrollHeight, 120) + "px";
+        });
+
+        input.addEventListener("keydown", (event) => {
+            if (event.key === "Enter" && !event.shiftKey) {
+                event.preventDefault();
+                form.requestSubmit();
+            }
+        });
+
+        form.addEventListener("submit", async (event) => {
+            event.preventDefault();
+
+            const message = input.value.trim();
+
+            if (!message || sendButton.disabled) {
+                return;
+            }
+
+            addMessage(message, "user");
+
+            input.value = "";
+            input.style.height = "auto";
+            sendButton.disabled = true;
+
+            const thinking = addMessage("Examining the question...", "bot");
+
+            try {
+                const response = await fetch("/chat", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ message })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    thinking.textContent =
+                        data.error || "Something went wrong.";
+                } else {
+                    thinking.textContent = data.reply;
+                }
+            } catch {
+                thinking.textContent =
+                    "I couldn't reach the server. Please try again.";
+            } finally {
+                sendButton.disabled = false;
+                input.focus();
+            }
+        });
+
+        input.focus();
+    </script>
+</body>
+</html>
